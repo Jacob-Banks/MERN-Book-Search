@@ -4,6 +4,7 @@ import { Form, Button, Alert } from "react-bootstrap";
 // import { createUser } from '../utils/API';
 import Auth from "../utils/auth";
 
+// import new dependencies -- ADD_USER and useMutation
 import { useMutation } from "@apollo/client";
 import { ADD_USER } from "../utils/mutations";
 
@@ -19,6 +20,7 @@ const SignupForm = () => {
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
 
+  // define addUser
   const [addUser, { error }] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
@@ -36,6 +38,7 @@ const SignupForm = () => {
       event.stopPropagation();
     }
 
+    // try catch block converted to use ADD_USER mutation
     try {
       const { data } = await addUser({
         variables: { ...userFormData },
