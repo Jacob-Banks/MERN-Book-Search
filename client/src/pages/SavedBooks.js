@@ -1,106 +1,102 @@
-import React, { useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import React from "react";
+import {
+  Jumbotron,
+  Container,
+  CardColumns,
+  Card,
+  Button,
+} from "react-bootstrap";
 
-// import { loginUser } from '../utils/API';
+// import { getMe, deleteBook } from '../utils/API';
 import Auth from "../utils/auth";
+import { removeBookId } from "../utils/localStorage";
 
-import { useMutation } from "@apollo/client";
-import { LOGIN_USER } from "../utils/mutations";
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_ME } from "../utils/queries";
+import { REMOVE_BOOK } from "../utils/mutations";
 
-const LoginForm = () => {
-  const [userFormData, setUserFormData] = useState({ email: "", password: "" });
-  const [validated] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
+const SavedBooks = () => {
+  const { loading, data } = useQuery(GET_ME);
+  const [removeBook, { error }] = useMutation(REMOVE_BOOK);
 
-  const [loginUser, { error }] = useMutation(LOGIN_USER);
+  const userData = data?.me || [];
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUserFormData({ ...userFormData, [name]: value });
-  };
+  // create function that accepts the book's mongo _id value as param and deletes the book from the database
+  const handleDeleteBook = async (bookId) => {
+    const token = Auth.loggedIn() ? Auth.getToken() : null;
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-
-    // check if form has everything (as per react-bootstrap docs)
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
+    if (!token) {
+      return false;
     }
 
     try {
-      const { data } = await loginUser({
-        variables: { ...userFormData },
+      const { data } = await removeBook({
+        variables: { bookId },
       });
 
       if (error) {
         throw new Error("something went wrong!");
       }
 
-      Auth.login(data.login.token);
-    } catch (e) {
-      console.error(e);
-      setShowAlert(true);
+      // upon success, remove book's id from localStorage
+      removeBookId(bookId);
+    } catch (err) {
+      console.error(err);
     }
-
-    setUserFormData({
-      username: "",
-      email: "",
-      password: "",
-    });
   };
+
+  // if data isn't here yet, say so
+  if (loading) {
+    return <h2>LOADING...</h2>;
+  }
 
   return (
     <>
-      <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
-        <Alert
-          dismissible
-          onClose={() => setShowAlert(false)}
-          show={showAlert}
-          variant="danger"
-        >
-          Something went wrong with your login credentials!
-        </Alert>
-        <Form.Group>
-          <Form.Label htmlFor="email">Email</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Your email"
-            name="email"
-            onChange={handleInputChange}
-            value={userFormData.email}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            Email is required!
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group>
-          <Form.Label htmlFor="password">Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Your password"
-            name="password"
-            onChange={handleInputChange}
-            value={userFormData.password}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            Password is required!
-          </Form.Control.Feedback>
-        </Form.Group>
-        <Button
-          disabled={!(userFormData.email && userFormData.password)}
-          type="submit"
-          variant="success"
-        >
-          Submit
-        </Button>
-      </Form>
+      <Jumbotron fluid className="text-light bg-dark">
+        <Container>
+          <h1>Viewing saved books!</h1>
+        </Container>
+      </Jumbotron>
+      <Container>
+        <h2>
+          {userData.savedBooks.length
+            ? `Viewing ${userData.savedBooks.length} saved ${
+                userData.savedBooks.length === 1 ? "book" : "books"
+              }:`
+            : "You have no saved books!"}
+        </h2>
+        <CardColumns>
+          {userData.savedBooks.map((book) => {
+            return (
+              <Card key={book.bookId} border="dark">
+                {book.image ? (
+                  <Card.Img
+                    src={book.image}
+                    alt={`The cover for ${book.title}`}
+                    variant="top"
+                  />
+                ) : null}
+                <Card.Body>
+                  <Card.Title>{book.title}</Card.Title>
+                  <p className="small">Authors: {book.authors}</p>
+                  <Card.Text>{book.description}</Card.Text>
+                  <a href={book.link} target="_blank">
+                    Google Books Preview
+                  </a>
+                  <Button
+                    className="btn-block btn-danger"
+                    onClick={() => handleDeleteBook(book.bookId)}
+                  >
+                    Delete this Book!
+                  </Button>
+                </Card.Body>
+              </Card>
+            );
+          })}
+        </CardColumns>
+      </Container>
     </>
   );
 };
 
-export default LoginForm;
+export default SavedBooks;
