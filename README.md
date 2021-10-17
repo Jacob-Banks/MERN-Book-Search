@@ -2,15 +2,15 @@
 
 ## Website
 
- https://quiet-fjord-87488.herokuapp.com/
- 
- ## Project Description
+https://quiet-fjord-87488.herokuapp.com/
+
+## Project Description
 
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg "License Badge")
 
-A Google Books API search engine built with RESTful API and refactored it to be a GraphQL API with Apollo Server. Find books! Save books! Read books! The app was built with the MERN stack. 
+A Google Books API search engine built with RESTful API and refactored it to be a GraphQL API with Apollo Server. Find books! Save books! Read books! The app was built with the MERN stack.
 
-#### Languages Used: 
+#### Languages Used:
 
 ![Language](https://img.shields.io/badge/HTML-green.svg "Language Badge")
 ![Language](https://img.shields.io/badge/CSS-blue.svg "Language Badge")
@@ -32,16 +32,17 @@ To install clone the app to your local git repository, and run `npm install` fro
 
 To use the app, click on the website link above. A user can search books using the search bar while logged off, but must login/signup to be able to save books and view your saved books.
 
-#### Screenshots 
+#### Screenshots
 
-*Book Search
+\*Book Search
 
-![Screenshot 1]
-*Books Saved
+![Screenshot 1](screen1.png)
+\*Books Saved
 
-![Screenshot 2]
+![Screenshot 2](screen2.png)
 
 ## Credits
+
 Starter-code provided by Carleton University. All other code provided by Jacob Banks.
 
 ## Licenses
