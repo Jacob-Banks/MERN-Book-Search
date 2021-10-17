@@ -56,4 +56,4 @@ For more information on the License used, click on the link below.
 Contact me via my github profile or email address (links below)
 
 - Github Username: [Jacob-Banks](https://github.com/Jacob-banks)
-- Email address: kobybanks0@gmail.com
+- Email address: kobybanks@gmail.com
